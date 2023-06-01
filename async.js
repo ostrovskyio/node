@@ -18,7 +18,7 @@ let myPromise = () =>
       console.log('(7)');
       resolve();
     })
-  );//через функцію setTimeout виконується не одразу console.log
+  );//через функцію setTimeout виконується не одразу після console.log
 
 let myPromise2 = () =>
   new Promise((resolve) => {
