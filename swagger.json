@@ -1,0 +1,247 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "title": "My API",
+      "description": "Description of my API",
+      "version": "1.0.0"
+    },
+    "basePath": "/api",
+    "schemes": [
+      "http"
+    ],
+    "paths": {
+      "/accounts": {
+        "get": {
+          "summary": "Get a list of accounts",
+          "responses": {
+            "200": {
+              "description": "Successful request",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Account"
+                }
+              }
+            }
+          }
+        },
+        "post": {
+          "summary": "Create a new account",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Account"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Account created"
+            },
+            "400": {
+              "description": "Bad request"
+            }
+          }
+        }
+      },
+      "/accounts/{id}": {
+        "put": {
+          "summary": "Update an account",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "description": "Account ID",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Account"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful request"
+            },
+            "400": {
+              "description": "Bad request"
+            },
+            "404": {
+              "description": "Account not found"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Delete an account",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "description": "Account ID",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "204": {
+              "description": "Account deleted"
+            },
+            "404": {
+              "description": "Account not found"
+            }
+          }
+        }
+      },
+      "/accounts/{id}/tokens": {
+        "get": {
+          "summary": "Get a list of tokens for an account",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "description": "Account ID",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful request",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Token"
+                }
+              }
+            }
+          }
+        }
+      },
+      "/tokens": {
+        "get": {
+          "summary": "Get a list of all tokens",
+          "responses": {
+            "200": {
+              "description": "Successful request",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Token"
+                }
+              }
+            }
+          }
+        },
+        "post": {
+          "summary": "Create a new token",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Token"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Token created"
+            },
+            "400": {
+              "description": "Bad request"
+            }
+          }
+        }
+      },
+      "/tokens/{id}": {
+        "put": {
+          "summary": "Update a token",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "description": "Token ID",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Token"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful request"
+            },
+            "400": {
+              "description": "Bad request"
+            },
+            "404": {
+              "description": "Token not found"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Delete a token",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "description": "Token ID",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "204": {
+              "description": "Token deleted"
+            },
+            "404": {
+              "description": "Token not found"
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "Account": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          }
+        }
+      },
+      "Token": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+  

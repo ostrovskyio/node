@@ -1,3 +1,5 @@
+// API at swagger.json
+
 const express = require('express');
 const jwt = require('jsonwebtoken');
 
@@ -11,16 +13,16 @@ const accounts = [
 
 const secretKey = 'your-secret-key';
 
-// Генерація токена
+// Token generation
 function generateToken(name) {
   return jwt.sign({ name }, secretKey);
 }
 
-// Перевірка ролі "Admin"
+// Check role "Admin"
 function isAdmin(req, res, next) {
   const { username, password } = req.query;
 
-  // Здійснюємо перевірку логіну та паролю
+  // Check login and password
   const account = accounts.find(acc => acc.username === username && acc.password === password);
   if (!account || account.role !== 'Admin') {
     return res.status(401).json({ error: 'Access denied' });
@@ -30,12 +32,12 @@ function isAdmin(req, res, next) {
   next();
 }
 
-// Отримання всіх облікових записів
+// Getting all accounts
 app.get('/accounts', (req, res) => {
   res.json(accounts);
 });
 
-// Отримання токену для певного облікового запису
+// Receiving a token for a specific account
 app.get('/accounts/token', (req, res) => {
   const { name } = req.query;
 
@@ -48,7 +50,7 @@ app.get('/accounts/token', (req, res) => {
   res.json({ token });
 });
 
-// Додавання нового облікового запису (тільки для ролі "Admin")
+// Adding a new account (only for "Admin")
 app.post('/accounts', isAdmin, (req, res) => {
   const { id, name, role, username, password } = req.body;
 
@@ -58,7 +60,7 @@ app.post('/accounts', isAdmin, (req, res) => {
   res.status(201).json(newAccount);
 });
 
-// Оновлення облікового запису (тільки для ролі "Admin")
+// Account update (only for "Admin")
 app.put('/accounts/:id', isAdmin, (req, res) => {
   const { id } = req.params;
   const { name, role, username, password } = req.body;
@@ -76,7 +78,7 @@ app.put('/accounts/:id', isAdmin, (req, res) => {
   res.json(account);
 });
 
-// Видалення облікового запису (тільки для ролі "Admin")
+// Delete account (only for "Admin")
 app.delete('/accounts/:id', isAdmin, (req, res) => {
   const { id } = req.params;
 
@@ -90,12 +92,11 @@ app.delete('/accounts/:id', isAdmin, (req, res) => {
   res.json({ message: 'Account deleted' });
 });
 
-// Запуск сервера
+// Start server
 app.listen(3001, () => {
   console.log('Server is running on port 3001');
 });
 
-app.get("/", (req, res) => {
-    res.send("Hello, World!");
-  });
+// API at swagger.json
+
   
