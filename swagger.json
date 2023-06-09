@@ -1,216 +1,182 @@
 {
     "swagger": "2.0",
     "info": {
-      "title": "My API",
-      "description": "Description of my API",
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "title": "Account Management API",
+      "description": "API for managing user accounts"
     },
-    "basePath": "/api",
+    "basePath": "/",
     "schemes": [
       "http"
     ],
     "paths": {
       "/accounts": {
         "get": {
-          "summary": "Get a list of accounts",
+          "summary": "Get all accounts",
           "responses": {
             "200": {
-              "description": "Successful request",
+              "description": "OK",
               "schema": {
                 "type": "array",
                 "items": {
                   "$ref": "#/definitions/Account"
                 }
               }
+            },
+            "500": {
+              "description": "Internal server error"
             }
           }
         },
         "post": {
-          "summary": "Create a new account",
+          "summary": "Create a new account (only for Admin)",
           "parameters": [
             {
-              "name": "body",
+              "name": "account",
               "in": "body",
+              "description": "Account details",
               "required": true,
               "schema": {
-                "$ref": "#/definitions/Account"
+                "$ref": "#/definitions/AccountInput"
               }
             }
           ],
           "responses": {
             "201": {
-              "description": "Account created"
+              "description": "Created",
+              "schema": {
+                "$ref": "#/definitions/Account"
+              }
             },
-            "400": {
-              "description": "Bad request"
+            "401": {
+              "description": "Access denied"
+            },
+            "500": {
+              "description": "Internal server error"
             }
-          }
+          },
+          "security": [
+            {
+              "jwt_token": []
+            }
+          ]
         }
       },
       "/accounts/{id}": {
         "put": {
-          "summary": "Update an account",
+          "summary": "Update an account (only for Admin)",
           "parameters": [
             {
               "name": "id",
               "in": "path",
               "description": "Account ID",
               "required": true,
-              "type": "string"
+              "type": "integer"
             },
             {
-              "name": "body",
+              "name": "account",
               "in": "body",
+              "description": "Updated account details",
               "required": true,
+              "schema": {
+                "$ref": "#/definitions/AccountInput"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
               "schema": {
                 "$ref": "#/definitions/Account"
               }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "Successful request"
             },
-            "400": {
-              "description": "Bad request"
+            "401": {
+              "description": "Access denied"
             },
             "404": {
               "description": "Account not found"
+            },
+            "500": {
+              "description": "Internal server error"
             }
-          }
+          },
+          "security": [
+            {
+              "jwt_token": []
+            }
+          ]
         },
         "delete": {
-          "summary": "Delete an account",
+          "summary": "Delete an account (only for Admin)",
           "parameters": [
             {
               "name": "id",
               "in": "path",
               "description": "Account ID",
               "required": true,
-              "type": "string"
+              "type": "integer"
             }
           ],
           "responses": {
-            "204": {
-              "description": "Account deleted"
+            "200": {
+              "description": "OK",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Account deleted"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Access denied"
             },
             "404": {
               "description": "Account not found"
+            },
+            "500": {
+              "description": "Internal server error"
             }
-          }
+          },
+          "security": [
+            {
+              "jwt_token": []
+            }
+          ]
         }
       },
-      "/accounts/{id}/tokens": {
+      "/accounts/token": {
         "get": {
-          "summary": "Get a list of tokens for an account",
+          "summary": "Get a token for an account",
           "parameters": [
             {
-              "name": "id",
-              "in": "path",
-              "description": "Account ID",
+              "name": "name",
+              "in": "query",
+              "description": "Account name",
               "required": true,
               "type": "string"
             }
           ],
           "responses": {
             "200": {
-              "description": "Successful request",
+              "description": "OK",
               "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/Token"
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "example": "<jwt-token>"
+                  }
                 }
               }
-            }
-          }
-        }
-      },
-      "/tokens": {
-        "get": {
-          "summary": "Get a list of all tokens",
-          "responses": {
-            "200": {
-              "description": "Successful request",
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/Token"
-                }
-              }
-            }
-          }
-        },
-        "post": {
-          "summary": "Create a new token",
-          "parameters": [
-            {
-              "name": "body",
-              "in": "body",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/Token"
-              }
-            }
-          ],
-          "responses": {
-            "201": {
-              "description": "Token created"
-            },
-            "400": {
-              "description": "Bad request"
-            }
-          }
-        }
-      },
-      "/tokens/{id}": {
-        "put": {
-          "summary": "Update a token",
-          "parameters": [
-            {
-              "name": "id",
-              "in": "path",
-              "description": "Token ID",
-              "required": true,
-              "type": "string"
-            },
-            {
-              "name": "body",
-              "in": "body",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/Token"
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "Successful request"
-            },
-            "400": {
-              "description": "Bad request"
             },
             "404": {
-              "description": "Token not found"
-            }
-          }
-        },
-        "delete": {
-          "summary": "Delete a token",
-          "parameters": [
-            {
-              "name": "id",
-              "in": "path",
-              "description": "Token ID",
-              "required": true,
-              "type": "string"
-            }
-          ],
-          "responses": {
-            "204": {
-              "description": "Token deleted"
+              "description": "Account not found"
             },
-            "404": {
-              "description": "Token not found"
+            "500": {
+              "description": "Internal server error"
             }
           }
         }
@@ -221,26 +187,42 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "type": "integer"
           },
           "name": {
             "type": "string"
           },
           "role": {
             "type": "string"
+          },
+          "username": {
+            "type": "string"
           }
         }
       },
-      "Token": {
+      "AccountInput": {
         "type": "object",
         "properties": {
-          "id": {
+          "name": {
             "type": "string"
           },
-          "name": {
+          "role": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "password": {
             "type": "string"
           }
         }
+      }
+    },
+    "securityDefinitions": {
+      "jwt_token": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header"
       }
     }
   }
