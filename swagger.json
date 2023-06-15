@@ -1,229 +1,450 @@
 {
-    "swagger": "2.0",
-    "info": {
-      "version": "1.0.0",
-      "title": "Account Management API",
-      "description": "API for managing user accounts"
-    },
-    "basePath": "/",
-    "schemes": [
-      "http"
-    ],
-    "paths": {
-      "/accounts": {
-        "get": {
-          "summary": "Get all accounts",
-          "responses": {
-            "200": {
-              "description": "OK",
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/Account"
-                }
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Account API",
+    "description": "API for managing user accounts"
+  },
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/accounts": {
+      "get": {
+        "summary": "Get all accounts from MySQL",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Account"
               }
-            },
-            "500": {
-              "description": "Internal server error"
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Add a new account to MySQL (only for 'Admin')",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AccountInput"
             }
           }
-        },
-        "post": {
-          "summary": "Create a new account (only for Admin)",
-          "parameters": [
-            {
-              "name": "account",
-              "in": "body",
-              "description": "Account details",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/AccountInput"
-              }
-            }
-          ],
-          "responses": {
-            "201": {
-              "description": "Created",
-              "schema": {
-                "$ref": "#/definitions/Account"
-              }
-            },
-            "401": {
-              "description": "Access denied"
-            },
-            "500": {
-              "description": "Internal server error"
+        ],
+        "responses": {
+          "201": {
+            "description": "Account created",
+            "schema": {
+              "$ref": "#/definitions/Account"
             }
           },
-          "security": [
-            {
-              "jwt_token": []
-            }
-          ]
-        }
-      },
-      "/accounts/{id}": {
-        "put": {
-          "summary": "Update an account (only for Admin)",
-          "parameters": [
-            {
-              "name": "id",
-              "in": "path",
-              "description": "Account ID",
-              "required": true,
-              "type": "integer"
-            },
-            {
-              "name": "account",
-              "in": "body",
-              "description": "Updated account details",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/AccountInput"
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "OK",
-              "schema": {
-                "$ref": "#/definitions/Account"
-              }
-            },
-            "401": {
-              "description": "Access denied"
-            },
-            "404": {
-              "description": "Account not found"
-            },
-            "500": {
-              "description": "Internal server error"
-            }
+          "401": {
+            "description": "Access denied"
           },
-          "security": [
-            {
-              "jwt_token": []
-            }
-          ]
-        },
-        "delete": {
-          "summary": "Delete an account (only for Admin)",
-          "parameters": [
-            {
-              "name": "id",
-              "in": "path",
-              "description": "Account ID",
-              "required": true,
-              "type": "integer"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "OK",
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "message": {
-                    "type": "string",
-                    "example": "Account deleted"
-                  }
-                }
-              }
-            },
-            "401": {
-              "description": "Access denied"
-            },
-            "404": {
-              "description": "Account not found"
-            },
-            "500": {
-              "description": "Internal server error"
-            }
-          },
-          "security": [
-            {
-              "jwt_token": []
-            }
-          ]
-        }
-      },
-      "/accounts/token": {
-        "get": {
-          "summary": "Get a token for an account",
-          "parameters": [
-            {
-              "name": "name",
-              "in": "query",
-              "description": "Account name",
-              "required": true,
-              "type": "string"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "OK",
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "token": {
-                    "type": "string",
-                    "example": "<jwt-token>"
-                  }
-                }
-              }
-            },
-            "404": {
-              "description": "Account not found"
-            },
-            "500": {
-              "description": "Internal server error"
-            }
+          "500": {
+            "description": "Internal server error"
           }
         }
       }
     },
-    "definitions": {
-      "Account": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer"
+    "/accounts/{id}": {
+      "put": {
+        "summary": "Update an account in MySQL (only for 'Admin')",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Account ID",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
           },
-          "name": {
-            "type": "string"
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AccountInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account updated",
+            "schema": {
+              "$ref": "#/definitions/Account"
+            }
           },
-          "role": {
-            "type": "string"
+          "401": {
+            "description": "Access denied"
           },
-          "username": {
-            "type": "string"
+          "404": {
+            "description": "Account not found"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       },
-      "AccountInput": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
+      "delete": {
+        "summary": "Delete an account from MySQL (only for 'Admin')",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Account ID",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account deleted",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
           },
-          "role": {
-            "type": "string"
+          "401": {
+            "description": "Access denied"
           },
-          "username": {
-            "type": "string"
+          "404": {
+            "description": "Account not found"
           },
-          "password": {
-            "type": "string"
+          "500": {
+            "description": "Internal server error"
           }
         }
       }
     },
-    "securityDefinitions": {
-      "jwt_token": {
-        "type": "apiKey",
-        "name": "Authorization",
-        "in": "header"
+    "/accounts/mongo": {
+      "get": {
+        "summary": "Get all accounts from MongoDB",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/MongoAccount"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Add a new account to MongoDB (only for 'Admin')",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MongoAccountInput"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Account created",
+            "schema": {
+              "$ref": "#/definitions/MongoAccount"
+            }
+          },
+          "401": {
+            "description": "Access denied"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/accounts/mongo/{id}": {
+      "put": {
+        "summary": "Update an account in MongoDB (only for 'Admin')",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Account ID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MongoAccountInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account updated",
+            "schema": {
+              "$ref": "#/definitions/MongoAccount"
+            }
+          },
+          "401": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Account not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an account from MongoDB (only for 'Admin')",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Account ID",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account deleted",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Account not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/accounts/token": {
+      "get": {
+        "summary": "Get a token for a specific account from MySQL",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Account name",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/accounts/mongo/token": {
+      "get": {
+        "summary": "Get a token for a specific account from MongoDB",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Account name",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
       }
     }
+  },
+  "definitions": {
+    "Account": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "AccountInput": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "role",
+        "username",
+        "password"
+      ]
+    },
+    "MongoAccount": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "MongoAccountInput": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "role",
+        "username",
+        "password"
+      ]
+    }
+  },
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
   }
-  
+}
