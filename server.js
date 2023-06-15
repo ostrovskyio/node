@@ -3,10 +3,12 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const { Sequelize, DataTypes } = require('sequelize');
+const mongoose = require('mongoose');
 
 const app = express();
 app.use(express.json());
 
+// MySQL configuration
 const sequelize = new Sequelize('test', 'test', 'test', {
   host: 'localhost',
   dialect: 'mysql'
@@ -35,6 +37,29 @@ const Account = sequelize.define('Account', {
     allowNull: false
   }
 });
+
+// MongoDB configuration
+const mongoURI = 'mongodb://localhost:27017/test';
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
+const mongoAccountSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  role: {
+    type: String,
+    required: true
+  },
+  username: {
+    type: String,
+    required: true
+  },
+  password: {
+    type: String,
+    required: true
+  }
+});
+const MongoAccount = mongoose.model('MongoAccount', mongoAccountSchema);
 
 const secretKey = 'your-secret-key';
 
@@ -67,7 +92,7 @@ async function isAdmin(req, res, next) {
   }
 }
 
-// Getting all accounts
+// Getting all accounts from MySQL
 app.get('/accounts', async (req, res) => {
   try {
     const accounts = await Account.findAll();
@@ -77,7 +102,17 @@ app.get('/accounts', async (req, res) => {
   }
 });
 
-// Receiving a token for a specific account
+// Getting all accounts from MongoDB
+app.get('/accounts/mongo', async (req, res) => {
+  try {
+    const accounts = await MongoAccount.find();
+    res.json(accounts);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Receiving a token for a specific account from MySQL
 app.get('/accounts/token', async (req, res) => {
   const { name } = req.query;
 
@@ -99,7 +134,27 @@ app.get('/accounts/token', async (req, res) => {
   }
 });
 
-// Adding a new account (only for "Admin")
+// Receiving a token for a specific account from MongoDB
+app.get('/accounts/mongo/token', async (req, res) => {
+  const { name } = req.query;
+
+  try {
+    const account = await MongoAccount.findOne({
+      name
+    });
+
+    if (!account) {
+      return res.status(404).json({ error: 'Account not found' });
+    }
+
+    const token = generateToken(account.name);
+    res.json({ token });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Adding a new account to MySQL (only for "Admin")
 app.post('/accounts', isAdmin, async (req, res) => {
   const { id, name, role, username, password } = req.body;
 
@@ -111,7 +166,19 @@ app.post('/accounts', isAdmin, async (req, res) => {
   }
 });
 
-// Account update (only for "Admin")
+// Adding a new account to MongoDB (only for "Admin")
+app.post('/accounts/mongo', isAdmin, async (req, res) => {
+  const { name, role, username, password } = req.body;
+
+  try {
+    const newAccount = await MongoAccount.create({ name, role, username, password });
+    res.status(201).json(newAccount);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Account update in MySQL (only for "Admin")
 app.put('/accounts/:id', isAdmin, async (req, res) => {
   const { id } = req.params;
   const { name, role, username, password } = req.body;
@@ -136,7 +203,29 @@ app.put('/accounts/:id', isAdmin, async (req, res) => {
   }
 });
 
-// Delete account (only for "Admin")
+// Account update in MongoDB (only for "Admin")
+app.put('/accounts/mongo/:id', isAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { name, role, username, password } = req.body;
+
+  try {
+    const account = await MongoAccount.findOneAndUpdate(
+      { _id: id },
+      { name, role, username, password },
+      { new: true }
+    );
+
+    if (!account) {
+      return res.status(404).json({ error: 'Account not found' });
+    }
+
+    res.json(account);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Delete account from MySQL (only for "Admin")
 app.delete('/accounts/:id', isAdmin, async (req, res) => {
   const { id } = req.params;
 
@@ -155,10 +244,28 @@ app.delete('/accounts/:id', isAdmin, async (req, res) => {
   }
 });
 
+// Delete account from MongoDB (only for "Admin")
+app.delete('/accounts/mongo/:id', isAdmin, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const account = await MongoAccount.findOneAndDelete({ _id: id });
+
+    if (!account) {
+      return res.status(404).json({ error: 'Account not found' });
+    }
+
+    res.json({ message: 'Account deleted' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Start server
 app.listen(3000, () => {
   console.log('Server is running on port 3000');
 });
+
 
 // API at swagger.json
 
