@@ -1,144 +1,41 @@
 {
-  "swagger": "2.0",
+  "openapi": "3.0.0",
   "info": {
-    "version": "1.0.0",
     "title": "Account API",
-    "description": "API for managing user accounts"
+    "version": "1.0.0",
+    "description": "API for managing user accounts in MySQL and MongoDB"
   },
-  "basePath": "/",
-  "schemes": [
-    "http"
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Development server"
+    }
   ],
   "paths": {
     "/accounts": {
       "get": {
         "summary": "Get all accounts from MySQL",
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Account"
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        }
-      },
-      "post": {
-        "summary": "Add a new account to MySQL (only for 'Admin')",
         "security": [
           {
-            "Bearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/AccountInput"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Account created",
-            "schema": {
-              "$ref": "#/definitions/Account"
-            }
-          },
-          "401": {
-            "description": "Access denied"
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        }
-      }
-    },
-    "/accounts/{id}": {
-      "put": {
-        "summary": "Update an account in MySQL (only for 'Admin')",
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Account ID",
-            "required": true,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/AccountInput"
-            }
+            "bearerAuth": []
           }
         ],
         "responses": {
           "200": {
-            "description": "Account updated",
-            "schema": {
-              "$ref": "#/definitions/Account"
-            }
-          },
-          "401": {
-            "description": "Access denied"
-          },
-          "404": {
-            "description": "Account not found"
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete an account from MySQL (only for 'Admin')",
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Account ID",
-            "required": true,
-            "type": "integer",
-            "format": "int64"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Account deleted",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string"
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Account"
+                  }
                 }
               }
             }
           },
           "401": {
             "description": "Access denied"
-          },
-          "404": {
-            "description": "Account not found"
           },
           "500": {
             "description": "Internal server error"
@@ -149,130 +46,27 @@
     "/accounts/mongo": {
       "get": {
         "summary": "Get all accounts from MongoDB",
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/MongoAccount"
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        }
-      },
-      "post": {
-        "summary": "Add a new account to MongoDB (only for 'Admin')",
         "security": [
           {
-            "Bearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/MongoAccountInput"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Account created",
-            "schema": {
-              "$ref": "#/definitions/MongoAccount"
-            }
-          },
-          "401": {
-            "description": "Access denied"
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        }
-      }
-    },
-    "/accounts/mongo/{id}": {
-      "put": {
-        "summary": "Update an account in MongoDB (only for 'Admin')",
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Account ID",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/MongoAccountInput"
-            }
+            "bearerAuth": []
           }
         ],
         "responses": {
           "200": {
-            "description": "Account updated",
-            "schema": {
-              "$ref": "#/definitions/MongoAccount"
-            }
-          },
-          "401": {
-            "description": "Access denied"
-          },
-          "404": {
-            "description": "Account not found"
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete an account from MongoDB (only for 'Admin')",
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Account ID",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Account deleted",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string"
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MongoAccount"
+                  }
                 }
               }
             }
           },
           "401": {
             "description": "Access denied"
-          },
-          "404": {
-            "description": "Account not found"
           },
           "500": {
             "description": "Internal server error"
@@ -287,19 +81,20 @@
           {
             "name": "name",
             "in": "query",
-            "description": "Account name",
-            "required": true,
-            "type": "string"
+            "description": "The name of the account",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
           }
         ],
         "responses": {
           "200": {
             "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "token": {
-                  "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
                 }
               }
             }
@@ -320,19 +115,20 @@
           {
             "name": "name",
             "in": "query",
-            "description": "Account name",
-            "required": true,
-            "type": "string"
+            "description": "The name of the account",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
           }
         ],
         "responses": {
           "200": {
             "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "token": {
-                  "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
                 }
               }
             }
@@ -345,106 +141,415 @@
           }
         }
       }
-    }
-  },
-  "definitions": {
-    "Account": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int64"
+    },
+    "/accounts": {
+      "post": {
+        "summary": "Add a new account to MySQL (Admin only)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewAccount"
+              }
+            }
+          }
         },
-        "name": {
-          "type": "string"
-        },
-        "role": {
-          "type": "string"
-        },
-        "username": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
+        "responses": {
+          "201": {
+            "description": "Account created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Account"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Access denied"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
         }
       }
     },
-    "AccountInput": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int64"
+    "/accounts/mongo": {
+      "post": {
+        "summary": "Add a new account to MongoDB (Admin only)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewMongoAccount"
+              }
+            }
+          }
         },
-        "name": {
-          "type": "string"
-        },
-        "role": {
-          "type": "string"
-        },
-        "username": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "name",
-        "role",
-        "username",
-        "password"
-      ]
-    },
-    "MongoAccount": {
-      "type": "object",
-      "properties": {
-        "_id": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "role": {
-          "type": "string"
-        },
-        "username": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
+        "responses": {
+          "201": {
+            "description": "Account created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MongoAccount"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Access denied"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
         }
       }
     },
-    "MongoAccountInput": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
+    "/accounts/{id}": {
+      "put": {
+        "summary": "Update an account in MySQL (Admin only)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the account",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAccount"
+              }
+            }
+          }
         },
-        "role": {
-          "type": "string"
-        },
-        "username": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
+        "responses": {
+          "200": {
+            "description": "Account updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Account"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Account not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
         }
       },
-      "required": [
-        "name",
-        "role",
-        "username",
-        "password"
-      ]
+      "delete": {
+        "summary": "Delete an account from MySQL (Admin only)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the account",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Account not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/accounts/mongo/{id}": {
+      "put": {
+        "summary": "Update an account in MongoDB (Admin only)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the account",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMongoAccount"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Account updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MongoAccount"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Account not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an account from MongoDB (Admin only)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the account",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Account not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
     }
   },
-  "securityDefinitions": {
-    "Bearer": {
-      "type": "apiKey",
-      "name": "Authorization",
-      "in": "header"
+  "components": {
+    "schemas": {
+      "Account": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "NewAccount": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdateAccount": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "TokenResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        }
+      },
+      "MongoAccount": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "NewMongoAccount": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdateMongoAccount": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
     }
   }
 }

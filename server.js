@@ -4,6 +4,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const { Sequelize, DataTypes } = require('sequelize');
 const mongoose = require('mongoose');
+const { body, validationResult } = require('express-validator');
 
 const app = express();
 app.use(express.json());
@@ -65,35 +66,40 @@ const secretKey = 'your-secret-key';
 
 // Token generation
 function generateToken(name) {
-  return jwt.sign({ name }, secretKey);
+  const token = jwt.sign({ name }, secretKey, { expiresIn: '1h' });
+  return token;
+}
+
+// Validate request data using express-validator
+function validateRequest(req, res, next) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  next();
 }
 
 // Check role "Admin"
 async function isAdmin(req, res, next) {
-  const { username, password } = req.query;
+  const token = req.headers.authorization?.split(' ')[1];
 
   try {
-    // Check login and password
-    const account = await Account.findOne({
-      where: {
-        username,
-        password
-      }
-    });
+    // Verify and decode the token
+    const decodedToken = jwt.verify(token, secretKey);
 
-    if (!account || account.role !== 'Admin') {
+    if (!decodedToken || decodedToken.role !== 'Admin') {
       return res.status(401).json({ error: 'Access denied' });
     }
 
-    req.account = account;
+    req.decodedToken = decodedToken;
     next();
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(401).json({ error: 'Invalid token' });
   }
 }
 
 // Getting all accounts from MySQL
-app.get('/accounts', async (req, res) => {
+app.get('/accounts', isAdmin, async (req, res) => {
   try {
     const accounts = await Account.findAll();
     res.json(accounts);
@@ -103,7 +109,7 @@ app.get('/accounts', async (req, res) => {
 });
 
 // Getting all accounts from MongoDB
-app.get('/accounts/mongo', async (req, res) => {
+app.get('/accounts/mongo', isAdmin, async (req, res) => {
   try {
     const accounts = await MongoAccount.find();
     res.json(accounts);
@@ -155,7 +161,13 @@ app.get('/accounts/mongo/token', async (req, res) => {
 });
 
 // Adding a new account to MySQL (only for "Admin")
-app.post('/accounts', isAdmin, async (req, res) => {
+app.post('/accounts', isAdmin, [
+  body('name').notEmpty().trim().escape(),
+  body('role').notEmpty().trim().escape(),
+  body('username').notEmpty().trim().escape(),
+  body('password').notEmpty().trim().escape(),
+  validateRequest
+], async (req, res) => {
   const { id, name, role, username, password } = req.body;
 
   try {
@@ -167,7 +179,13 @@ app.post('/accounts', isAdmin, async (req, res) => {
 });
 
 // Adding a new account to MongoDB (only for "Admin")
-app.post('/accounts/mongo', isAdmin, async (req, res) => {
+app.post('/accounts/mongo', isAdmin, [
+  body('name').notEmpty().trim().escape(),
+  body('role').notEmpty().trim().escape(),
+  body('username').notEmpty().trim().escape(),
+  body('password').notEmpty().trim().escape(),
+  validateRequest
+], async (req, res) => {
   const { name, role, username, password } = req.body;
 
   try {
@@ -179,7 +197,13 @@ app.post('/accounts/mongo', isAdmin, async (req, res) => {
 });
 
 // Account update in MySQL (only for "Admin")
-app.put('/accounts/:id', isAdmin, async (req, res) => {
+app.put('/accounts/:id', isAdmin, [
+  body('name').notEmpty().trim().escape(),
+  body('role').notEmpty().trim().escape(),
+  body('username').notEmpty().trim().escape(),
+  body('password').notEmpty().trim().escape(),
+  validateRequest
+], async (req, res) => {
   const { id } = req.params;
   const { name, role, username, password } = req.body;
 
@@ -204,7 +228,13 @@ app.put('/accounts/:id', isAdmin, async (req, res) => {
 });
 
 // Account update in MongoDB (only for "Admin")
-app.put('/accounts/mongo/:id', isAdmin, async (req, res) => {
+app.put('/accounts/mongo/:id', isAdmin, [
+  body('name').notEmpty().trim().escape(),
+  body('role').notEmpty().trim().escape(),
+  body('username').notEmpty().trim().escape(),
+  body('password').notEmpty().trim().escape(),
+  validateRequest
+], async (req, res) => {
   const { id } = req.params;
   const { name, role, username, password } = req.body;
 
