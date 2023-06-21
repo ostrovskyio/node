@@ -13,5 +13,5 @@ const writeStream = fs.createWriteStream(outputFilePath);
 readStream.pipe(unzip).pipe(writeStream);
 
 writeStream.on('finish', () => {
-  console.log('Файл розархівовано та записано у book2.txt.');
+  console.log('File unzipped and written to book2.txt.');
 });

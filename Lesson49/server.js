@@ -1,14 +1,14 @@
 const io = require('socket.io')(3000);
 
 io.on('connection', (socket) => {
-  console.log('Клієнт підключився');
+  console.log('Client connected');
 
   socket.on('message', (data) => {
-    console.log('Повідомлення від клієнта:', data);
-    socket.emit('message', 'Отримано повідомлення: ' + data);
+    console.log('Message from client:', data);
+    socket.emit('message', 'Message received: ' + data);
   });
 
   socket.on('disconnect', () => {
-    console.log('Клієнт відключився');
+    console.log('Client disconnected');
   });
 });
