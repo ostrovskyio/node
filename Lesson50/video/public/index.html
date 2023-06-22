@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Webcam Stream</title>
+  <style>
+    #video {
+      width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <video id="video" autoplay></video>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const video = document.getElementById('video');
+    const socket = io();
+
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then((stream) => {
+          video.srcObject = stream;
+
+          const canvas = document.createElement('canvas');
+          const context = canvas.getContext('2d');
+          const width = video.offsetWidth;
+          const height = video.offsetHeight;
+
+          setInterval(() => {
+            context.drawImage(video, 0, 0, width, height);
+            const image = canvas.toDataURL('image/jpeg', 0.5);
+            socket.emit('stream', image);
+          }, 100);
+        })
+        .catch((error) => {
+          console.error('Error accessing webcam:', error);
+        });
+    }
+  </script>
+</body>
+
+</html>
