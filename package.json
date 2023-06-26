@@ -13,6 +13,7 @@
     "jslint": "^0.12.1"
   },
   "dependencies": {
+    "amqplib": "^0.10.3",
     "dotenv": "^16.1.4",
     "express": "^4.18.2",
     "express-jwt": "^8.4.1",
@@ -27,6 +28,8 @@
     "sequelize": "^6.32.0",
     "socket.io": "^4.6.2",
     "socket.io-client": "^4.7.0",
+    "winston": "^3.9.0",
+    "winston-transport": "^4.5.0",
     "zlib": "^1.0.5"
   }
 }

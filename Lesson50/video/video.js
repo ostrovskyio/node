@@ -2,6 +2,26 @@ const express = require('express');
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
+const winston = require('winston');
+const { transports } = require('winston');
+const amqp = require('amqplib');
+
+const fileTransport = new transports.File({ filename: 'logs.log' });
+
+const rabbitMqTransport = new transports.RabbitMQ({
+  exchange: 'logs',
+  level: 'info',
+  uri: 'amqp://localhost'
+});
+
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.json(),
+  transports: [
+    fileTransport,
+    rabbitMqTransport
+  ]
+});
 
 app.use(express.static('public'));
 
@@ -10,10 +30,10 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  console.log('A client connected.');
+  logger.info('A client connected.');
 
   socket.on('disconnect', () => {
-    console.log('A client disconnected.');
+    logger.info('A client disconnected.');
   });
 
   socket.on('stream', (image) => {
@@ -22,5 +42,5 @@ io.on('connection', (socket) => {
 });
 
 http.listen(3000, () => {
-  console.log('Server listening on port 3000');
+  logger.info('Server listening on port 3000');
 });
